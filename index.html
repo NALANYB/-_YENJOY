@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>颜娱社区 YENJOY</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== 启动画面 ===== */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10000;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #splash-screen.fade-out {
+      animation: splashFadeOut 0.5s ease forwards;
+    }
+    .splash-img {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      animation: splashImgIn 0.6s ease both;
+    }
+    .splash-logo {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .splash-logo .brand {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: #fff;
+    }
+    .splash-logo .sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+    .splash-loader {
+      margin-top: 24px;
+      width: 100px; height: 2px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .splash-loader-bar {
+      width: 0%; height: 100%;
+      background: #fff;
+      border-radius: 1px;
+      animation: splashLoad 1.8s 0.4s ease forwards;
+    }
+    @keyframes splashImgIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes splashLoad {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    @keyframes splashFadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; pointer-events: none; }
+    }
+  </style>
+</head>
+<body class="dark">
+  <!-- ===== 启动画面 ===== -->
+  <div id="splash-screen">
+    <img src="assets/splash.jpg" class="splash-img" alt="splash">
+    <div class="splash-logo">
+      <div class="brand">YENJOY</div>
+      <div class="sub">颜 娱 社 区</div>
+    </div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+  <div id="app" class="app-container">
+    <button class="global-theme-toggle" id="globalThemeBtn">⚙️</button>
+
+    <!-- ========== 1. 登录 / 注册页 ========== -->
+    <div id="page-login" class="page">
+      <div class="page-content login-page">
+        <div class="login-logo">
+          <div class="login-brand">YENJOY</div>
+          <div class="login-sub">颜娱社区</div>
+        </div>
+        <div class="login-card">
+          <div class="login-tabs">
+            <div class="login-tab active" id="tabLogin" data-mode="login">登录</div>
+            <div class="login-tab" id="tabRegister" data-mode="register">注册</div>
+          </div>
+          <input type="tel" id="loginPhone" class="login-input" placeholder="请输入手机号" maxlength="11" autocomplete="tel">
+          <input type="password" id="loginPassword" class="login-input" placeholder="请输入密码（至少6位）" maxlength="32">
+          <input type="password" id="loginPassword2" class="login-input" placeholder="请再次输入密码" maxlength="32" style="display:none;">
+          <button id="loginSubmitBtn" class="login-btn">登录</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 2. 主界面 ========== -->
+    <div id="page-home" class="page active">
+      <div class="page-content page-content-nav">
+        <h1 class="yenjoy-title">YENJOY</h1>
+        <div class="home-user-card">
+          <div class="avatar-container" onclick="openBadgePicker('home')">
+            <div class="avatar" id="homeAvatar">玩<img src="" style="display: none;"></div>
+            <div class="avatar-badge-edit">✦</div>
+          <img src="assets/badges/badge-admin.png" class="avatar-badge"></div>
+          <div class="user-info">
+            <div class="user-name" id="homeUserName">玩家1451</div>
+            <div class="user-phone" id="homeUserPhone">手机: 114****1451</div>
+          </div>
+          <button class="home-logout-btn" onclick="logout()">退出</button>
+        </div>
+        <div class="welcome-card">
+          <div class="welcome-card-left">
+            <div class="welcome-text">欢迎使用颜娱助手</div>
+            <div class="welcome-brand-row">
+              <div class="welcome-brand">MUYAN</div>
+            </div>
+          </div>
+          <div id="welcomeBadgeWrap" class="welcome-badge-wrap" onclick="openBadgePicker('home')"></div>
+        </div>
+        <div class="func-grid">
+          <div class="func-btn" onclick="window.open('https://pd.qq.com/s/7nl5gr3bl?b=9','_blank')">加入GB频道</div>
+          <div class="func-btn" onclick="navigateTo('activity')">关于活动</div>
+          <div class="func-btn" onclick="navigateTo('link')">联机助手</div>
+          <div class="func-btn" onclick="showToast('关注作者暂未开发')">关注作者</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 3. 社区页 ========== -->
+    <div id="page-community" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">社区</h2>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item" data-tab="follow" onclick="switchTab('follow')">关注</div>
+          <div class="tab-item active" data-tab="dynamic" id="tabDynamic" onclick="switchTab('dynamic')">动态</div>
+          <div class="tab-item" data-tab="hot" onclick="switchTab('hot')">热门</div>
+        </div>
+        <div class="community-feed" id="communityFeed">
+          <div class="empty-state" id="communityEmpty">暂无任何信息</div>
+        </div>
+      </div>
+      <div class="post-bar">
+        <div class="post-bar-inner">
+          <button class="emoji-btn" id="emojiBtn" title="表情"><img src="assets/emojis/Cool.png" alt="表情"></button>
+          <input type="text" class="post-input" id="postInput" placeholder="说点什么..." maxlength="500">
+          <button class="post-send-btn" id="postSendBtn">发送</button>
+          <button class="post-plus-btn" id="postPlusBtn">+</button>
+        </div>
+        <div class="attachment-preview" id="attachmentPreview" style="display:none;">
+          <div class="preview-item" id="previewItem"></div>
+          <button class="preview-cancel" id="previewCancelBtn">×</button>
+        </div>
+        <div class="attachment-menu" id="attachmentMenu" style="display:none;">
+          <div class="att-menu-item" id="attPickFile">文件 (.gbmap)</div>
+          <div class="att-menu-item" id="attPickImage">图片</div>
+          <div class="att-menu-item" id="attPickVideo">视频</div>
+          <div class="att-menu-item" id="attPickVoice">语音</div>
+        </div>
+        <div class="emoji-panel" id="emojiPanel" style="display:none;">
+          <div class="emoji-panel-header">
+            <span>选择表情</span>
+            <button class="emoji-panel-close" id="emojiPanelClose">×</button>
+          </div>
+          <div class="emoji-grid" id="emojiGrid"></div>
+        </div>
+      </div>
+      <input type="file" id="hiddenImageInput" accept="image/*" style="display:none;">
+      <input type="file" id="hiddenVideoInput" accept="video/*" style="display:none;">
+      <input type="file" id="hiddenFileInput" accept=".gbmap" style="display:none;">
+    </div>
+
+    <!-- ========== 4. 活动页 ========== -->
+    <div id="page-activity" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">关于活动</h2>
+          <button class="three-dots-btn" id="activityMenuBtn">•••</button>
+        </div>
+        <div class="activity-menu" id="activityMenu" style="display:none;">
+          <div class="act-menu-item" id="actSearchItem">搜索活动</div>
+          <div class="act-menu-item" id="actCreateItem">创建活动</div>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="empty-state" id="activityEmpty">暂无任何活动</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 5. 我的页 ========== -->
+    <div id="page-mine" class="page">
+      <div class="page-content page-content-nav">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">我的</h2>
+        </div>
+        <div class="user-card anim-card" id="mineUserCard">
+          <div class="avatar-container" onclick="openBadgePicker('mine')">
+            <div class="avatar" id="mineAvatar">玩<img src="" style="display: none;"></div>
+            <div class="avatar-badge-edit">✦</div>
+          <img src="assets/badges/badge-admin.png" class="avatar-badge"></div>
+          <div class="user-info">
+            <div class="user-name" id="mineUserName">玩家1451</div>
+            <div class="user-phone" id="mineUserPhone">手机: 114****1451</div>
+          </div>
+        </div>
+        <div class="list-card anim-card">
+          <div class="list-row" onclick="openProfileEdit('mine')">
+            <span>个人资料</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="list-row" id="myMessagesRow" onclick="openMyMessages()">
+            <span>我的消息</span>
+            <span class="msg-badge-wrap">
+              <span class="msg-badge" id="msgBadge" style="display:none;">0</span>
+              <span class="arrow">&gt;</span>
+            </span>
+          </div>
+          <div class="list-row" onclick="navigateTo('settings')">
+            <span>设置</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="list-row" onclick="navigateTo('about')">
+            <span>关于我们</span><span class="arrow">&gt;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 6. 个人资料编辑页 ========== -->
+    <div id="page-profile-edit" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" id="profileBackBtn">← 返回</button>
+          <h2 class="topbar-title">个人资料</h2>
+        </div>
+        <div class="profile-card anim-card">
+          <div class="profile-avatar-wrap">
+            <div class="avatar-container" onclick="openBadgePicker('profile')">
+              <div class="avatar avatar-lg avatar-black" id="profileAvatar"></div>
+              <div class="avatar-badge-edit">✦</div>
+            </div>
+            <div class="profile-avatar-hint">点击更换头像</div>
+          </div>
+          <div class="underline-row">
+            <label class="underline-label">姓名：</label>
+            <input type="text" class="underline-input" id="formName" placeholder="" maxlength="20">
+          </div>
+          <div class="underline-row">
+            <label class="underline-label">主玩：</label>
+            <input type="text" class="underline-input" id="formMainGame" placeholder="" maxlength="30">
+          </div>
+          <div class="underline-row">
+            <label class="underline-label">简介：</label>
+            <textarea class="underline-input underline-area" id="formBio" placeholder="" maxlength="200"></textarea>
+          </div>
+          <button class="save-profile-btn" id="saveProfileBtn">保存</button>
+        </div>
+        <div class="info-section anim-card">
+          <h3 class="info-section-title">我发布过的信息</h3>
+          <div class="info-empty" id="profileInfoEmpty">
+            <div class="empty-cat-text">喵喵喵，您好像并没有发布过信息。。。。</div>
+            <svg class="cat-box" viewBox="0 0 100 88" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="28,26 34,12 40,26" fill="#9aa6b2"></polygon>
+              <polygon points="60,26 66,12 72,26" fill="#9aa6b2"></polygon>
+              <circle cx="50" cy="34" r="21" fill="#b8c0c8"></circle>
+              <circle cx="43" cy="33" r="2.6" fill="#2b2b2b"></circle>
+              <circle cx="57" cy="33" r="2.6" fill="#2b2b2b"></circle>
+              <rect x="14" y="52" width="72" height="30" rx="4" fill="#82b8e8"></rect>
+              <rect x="14" y="52" width="72" height="9" rx="4" fill="#a9cbe8"></rect>
+            </svg>
+          </div>
+          <div class="info-list" id="profileInfoList"></div>
+        </div>
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+    </div>
+
+    <!-- ========== 7. 作者主页 ========== -->
+    <div id="page-author" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">作者主页</h2>
+        </div>
+        <div class="author-card anim-card">
+          <div class="avatar-container">
+            <div class="author-avatar" id="authorAvatar">
+              <div class="author-badge-indicator">✦</div>
+            </div>
+          </div>
+          <div class="author-name" id="authorName">玩家</div>
+          <div class="author-bio" id="authorBio"></div>
+          <button class="follow-btn" id="authorFollowBtn">关注</button>
+        </div>
+        <div class="info-section anim-card">
+          <h3 class="info-section-title">TA发布过的信息</h3>
+          <div class="info-empty" id="authorInfoEmpty" style="display:none;">
+            <div class="empty-cat-text">暂无发布过信息</div>
+          </div>
+          <div class="info-list" id="authorInfoList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 8. 联机助手页（菜单） ========== -->
+    <div id="page-link" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">联机助手</h2>
+        </div>
+        <div class="link-menu">
+          <div class="link-menu-item" onclick="openProfileEdit('link')">
+            <span>修改个人信息</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="link-menu-item" onclick="openCreateRoomModal()">
+            <span>创建房间</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="link-menu-item" onclick="showToast('加入房间暂未开发')">
+            <span>加入房间</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="link-menu-item" onclick="navigateTo('roomlist')">
+            <span>房间列表</span><span class="arrow">&gt;</span>
+          </div>
+          <div class="link-menu-item" onclick="showToast('联机教程暂未开发')">
+            <span>联机教程</span><span class="arrow">&gt;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 8b. 房间列表页 ========== -->
+    <div id="page-roomlist" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">房间列表</h2>
+          <button class="three-dots-btn" id="createRoomBtn2" onclick="openCreateRoomModal()">+</button>
+        </div>
+        <div class="room-list" id="roomList">
+          <div class="empty-state" id="roomEmpty">暂无任何房间</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 9. 我的消息页 ========== -->
+    <div id="page-messages" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">我的消息</h2>
+        </div>
+        <div class="msg-list" id="msgList">
+          <div class="empty-state" id="msgEmpty">暂无消息</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 10. 意见箱页 ========== -->
+    <div id="page-feedback" class="page">
+      <div class="page-content page-content-nav">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">意见箱</h2>
+        </div>
+        <div class="center-box">
+          <div class="center-text">暂未开发</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 11. 设置页 ========== -->
+    <div id="page-settings" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">设置</h2>
+        </div>
+        <div class="list-card">
+          <div class="fps-title">帧率限制</div>
+          <div class="fps-options">
+            <div class="fps-option" data-fps="60" onclick="setFps(60)">
+              <div class="fps-circle" id="fpsCircle60"></div>
+              <span>60帧</span>
+            </div>
+            <div class="fps-option" data-fps="90" onclick="setFps(90)">
+              <div class="fps-circle" id="fpsCircle90"></div>
+              <span>90帧</span>
+            </div>
+            <div class="fps-option" data-fps="120" onclick="setFps(120)">
+              <div class="fps-circle" id="fpsCircle120"></div>
+              <span>120帧</span>
+            </div>
+          </div>
+        </div>
+        <div class="list-card">
+          <div class="list-row logout-row" id="logoutBtn">
+            <span>退出登录</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 12. 关于我们页 ========== -->
+    <div id="page-about" class="page">
+      <div class="page-content">
+        <div class="topbar">
+          <button class="back-top" onclick="goBack()">← 返回</button>
+          <h2 class="topbar-title">关于我们</h2>
+        </div>
+        <div class="list-card about-card">
+          <div class="about-brand">YENJOY</div>
+          <div class="about-sub">颜娱社区 1.0</div>
+          <div class="anti-cheat">私自改文件改代码，等一切作弊行为，将会封禁关于活动的功能</div>
+        </div>
+        <div class="credits-card credits-fade" id="creditsCard">
+          <div class="credits-role">总编辑设计</div>
+          <div class="credits-name credits-green" id="creditsMUYAN">MUYAN</div>
+          <div class="credits-cn credits-green" id="creditsMUYANcn">木颜</div>
+          <div class="credits-name credits-green" id="creditsNALAN">NALAN</div>
+          <div class="credits-cn credits-green" id="creditsNALANcn">娜兰</div>
+          <div class="credits-role">参与设计</div>
+          <div class="credits-row">
+            <div class="credits-col">
+              <div class="credits-name credits-yellow" id="creditsLANJAO">LANJAO</div>
+              <div class="credits-cn credits-yellow" id="creditsLANJAOcn">懒觉</div>
+            </div>
+            <div class="credits-col">
+              <div class="credits-name credits-gray" id="creditsXIAOKUI">XIAOKUI</div>
+              <div class="credits-cn credits-gray" id="creditsXIAOKUIcn">小葵</div>
+            </div>
+          </div>
+          <div class="credits-role">赞助创作</div>
+          <div class="credits-name credits-white" id="creditsECHO">ECHO</div>
+          <div class="credits-cn credits-white" id="creditsECHOcn">酒精</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 评论面板（底部弹出） ========== -->
+    <div class="comment-overlay" id="commentOverlay" style="display:none;">
+      <div class="comment-panel" id="commentPanel">
+        <div class="comment-header">
+          <span class="comment-title">评论</span>
+          <button class="comment-close" id="commentCloseBtn">×</button>
+        </div>
+        <div class="comment-list" id="commentList"></div>
+        <div class="comment-input-bar">
+          <input type="text" class="comment-input" id="commentInput" placeholder="说点什么..." maxlength="200">
+          <button class="comment-send-btn" id="commentSendBtn">发送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 创建房间弹窗 ========== -->
+    <div class="modal-overlay" id="createRoomModal" style="display:none;">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 class="modal-title">创建房间</h3>
+          <button class="modal-close" id="closeRoomModalBtn">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <label class="form-label">游戏名称 *</label>
+            <input type="text" class="form-input" id="roomGame" placeholder="如：GoreBox" maxlength="30">
+          </div>
+          <div class="form-row">
+            <label class="form-label">服务器地址</label>
+            <select class="form-input" id="roomServer">
+              <option value="">请选择（选填）</option>
+              <option value="亚服">亚服</option>
+              <option value="欧服">欧服</option>
+              <option value="美服">美服</option>
+              <option value="俄服">俄服</option>
+              <option value="国服">国服</option>
+              <option value="区域网">区域网</option>
+              <option value="其它">其它</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">房间名称 *</label>
+            <input type="text" class="form-input" id="roomName" placeholder="输入房间名称" maxlength="30">
+          </div>
+          <div class="form-row">
+            <label class="form-label">密码（选填）</label>
+            <input type="text" class="form-input" id="roomPassword" placeholder="不填则无密码" maxlength="20">
+          </div>
+          <div class="form-row">
+            <label class="form-label">公告（选填）</label>
+            <textarea class="form-input form-area" id="roomAnnounce" placeholder="输入房间公告" maxlength="100"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="publish-btn" id="publishRoomBtn" style="display:none;">创建</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 房间操作弹窗（长按） ========== -->
+    <div class="modal-overlay" id="roomActionModal" style="display:none;">
+      <div class="modal-box" style="max-width:300px;">
+        <div class="room-action-item" id="roomCopyAnnounce">复制公告</div>
+        <div class="room-action-item room-action-delete" id="roomDeleteBtn">删除</div>
+        <div class="room-action-item room-action-cancel" id="roomActionCancel">取消</div>
+      </div>
+    </div>
+
+    <!-- ========== 删除房间确认弹窗 ========== -->
+    <div class="modal-overlay" id="deleteRoomModal" style="display:none;">
+      <div class="modal-box" style="max-width:320px;text-align:center;">
+        <div class="modal-title" style="margin-bottom:12px;">确认删除这个房间？</div>
+        <div style="color:#888;font-size:14px;margin-bottom:20px;">删除后无法恢复</div>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button id="delRoomCancelBtn" style="background:#e0ecf8;color:#1a3a5c;padding:10px 24px;border-radius:0;font-size:16px;border:none;cursor:pointer;">取消</button>
+          <button id="delRoomConfirmBtn" style="background:#dd3333;color:#fff;padding:10px 24px;border-radius:0;font-size:16px;border:none;cursor:pointer;">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 创建活动弹窗 ========== -->
+    <div class="modal-overlay" id="createActivityModal" style="display:none;">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 class="modal-title">创建活动</h3>
+          <button class="modal-close" id="closeActModalBtn">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <label class="form-label">活动名称 *</label>
+            <input type="text" class="form-input" id="actTitle" placeholder="输入活动名称" maxlength="30">
+          </div>
+          <div class="form-row">
+            <label class="form-label">活动时间 *</label>
+            <input type="text" class="form-input" id="actTime" placeholder="如：周六晚8点" maxlength="30">
+          </div>
+          <div class="form-row">
+            <label class="form-label">画布大小</label>
+            <div class="size-options">
+              <div class="size-option" data-size="small">
+                <div class="size-circle" id="circle-small"></div>
+                <div class="size-name">小方面</div>
+                <div class="size-desc">无次数限制</div>
+              </div>
+              <div class="size-option" data-size="medium">
+                <div class="size-circle" id="circle-medium"></div>
+                <div class="size-name">中方面</div>
+                <div class="size-desc">拥有 <span id="mediumCount">0</span> 次机会</div>
+                <button class="claim-btn" id="claimMediumBtn">领取今日次数</button>
+              </div>
+              <div class="size-option" data-size="large">
+                <div class="size-circle" id="circle-large"></div>
+                <div class="size-name">大方面</div>
+                <div class="size-desc">拥有 <span id="largeCount">0</span> 次机会</div>
+              </div>
+            </div>
+          </div>
+          <div class="large-image-area" id="largeImageArea" style="display:none;">
+            <div class="form-label">活动图片（仅大方面）</div>
+            <div class="large-image-preview" id="largeImagePreview" style="display:none;">
+              <img id="largeImageImg" src="" alt="活动图片预览">
+              <button class="preview-cancel" id="cancelLargeImgBtn">×</button>
+            </div>
+            <button class="add-large-image-btn" id="addLargeImgBtn">添加图片</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="publish-btn" id="publishActBtn">发布</button>
+        </div>
+      </div>
+      <input type="file" id="activityImageInput" accept="image/*" style="display:none;">
+    </div>
+
+    <!-- ========== 删除帖子确认弹窗 ========== -->
+    <div class="modal-overlay" id="deleteConfirmModal" style="display:none;">
+      <div class="modal-box" style="max-width:320px;text-align:center;">
+        <div class="modal-title" style="margin-bottom:12px;">确认删除这条帖子？</div>
+        <div style="color:#888;font-size:14px;margin-bottom:20px;">删除后无法恢复</div>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button id="delCancelBtn" style="background:#e0ecf8;color:#1a3a5c;padding:10px 24px;border-radius:0;font-size:16px;border:none;cursor:pointer;">取消</button>
+          <button id="delConfirmBtn" style="background:#dd3333;color:#fff;padding:10px 24px;border-radius:0;font-size:16px;border:none;cursor:pointer;">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 底部导航 ========== -->
+    <div class="bottom-nav" id="bottomNav" style="display: flex;">
+      <button class="bn-btn" data-nav="community">社区</button>
+      <button class="bn-btn" data-nav="mine">我的</button>
+      <button class="bn-btn" data-nav="feedback">意见箱</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ========== 徽章选择器弹窗 ========== -->
+    <div class="badge-picker-overlay" id="badgePickerOverlay" style="display:none;">
+      <div class="badge-picker-modal">
+        <div class="badge-picker-header">
+          <span>选择徽章</span>
+          <button class="modal-close" onclick="closeBadgePicker()">×</button>
+        </div>
+        <div class="badge-picker-grid" id="badgePickerGrid"></div>
+        <div class="badge-picker-footer">
+          <button class="badge-clear-btn" id="badgeClearBtn">清除徽章</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="npoint-config.js"></script>
+  <script src="app.js"></script>
+
+
+<div style="position: fixed; top: 0px; left: 0px; right: 0px; z-index: 9999; padding: 4px; font-size: 12px; text-align: center; color: rgb(255, 255, 255); background: rgb(76, 175, 80);">云端已连接</div></body></html>
